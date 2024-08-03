@@ -81,3 +81,30 @@ router.post('/:id/follow', authenticateToken, async (req, res)=>{
         res.status(500).json({message: "Server error"})
     }
 })
+
+
+router.post('/:id/unfollow', authenticateToken, async (req, res) =>{
+    try{
+        const user = User.findById(req.params.id);
+         if(!user){
+            return res.status(404).json({message: 'User not found'}); 
+        }
+        const currentUser = User.findById(req.user.userId);
+        
+        user.followers.pull(currentUser.userId)
+        await  user.save()
+
+        currentUser.following.pull(user.userId)
+        await currentUser.save()
+    }
+    catch (err) {
+        res.status(500).json({message: "server errror"})
+    }
+
+
+
+
+
+
+
+})
